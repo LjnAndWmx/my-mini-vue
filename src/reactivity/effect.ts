@@ -1,16 +1,34 @@
+import { extend } from "../shared";
 
 class ReactiveEffect {
     private _fn: any;
-
-    constructor(fn, public scheduler?) {
+    deps = [];
+    active = true;
+    onStop? :() => void;//任意值
+    public scheduler:Function | undefined;
+    constructor(fn, scheduler?:Function) {
         this._fn = fn;
+        this.scheduler = scheduler;
     }
     run() {
         activeEffect = this;
         return this._fn();
     }
+    stop(){
+        if(this.active){
+            cleanupEffect(this);
+            this.onStop && this.onStop();
+            this.active = false;
+        }
+        
+    }
 }
 
+function cleanupEffect(effect){
+    effect.deps.forEach((dep: any)=>{
+        dep.delete(effect);
+    })
+}
 
 const targetMap = new Map();
 export function track (target, key) {
@@ -28,7 +46,10 @@ export function track (target, key) {
         depMap.set(key, dep);
     }
 
+    if(!activeEffect) return;
+
     dep.add(activeEffect);
+    activeEffect.deps.push(dep);
     console.log(dep)
 }
 
@@ -50,8 +71,19 @@ let activeEffect;
 export function effect(fn,options: any = {}) {
     //fn
     const _effect = new ReactiveEffect(fn, options.scheduler);//面向对象思想
-
+    // _effect.onStop = options.onStop;
+    //options
+    Object.assign(_effect, options);
+    //extend
+    extend(_effect, options);
     _effect.run();
 
+    const runner: any = _effect.run.bind(_effect);
+    runner.effect = _effect;
+
     return _effect.run.bind(_effect);
+}
+
+export function stop(runner){
+    runner.effect.stop();
 }
