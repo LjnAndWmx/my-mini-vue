@@ -31,6 +31,7 @@ function cleanupEffect(effect){
 }
 
 const targetMap = new Map();
+//收集依赖
 export function track (target, key) {
     //target -> key ->dep
     let depMap = targetMap.get(target);
@@ -53,7 +54,7 @@ export function track (target, key) {
     console.log(dep)
 }
 
-
+//触发依赖
 export function trigger(target, key){
     let depMap = targetMap.get(target);
     let dep = depMap.get(key);
