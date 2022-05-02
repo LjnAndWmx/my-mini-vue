@@ -81,7 +81,8 @@ export function effect(fn,options: any = {}) {
     const runner: any = _effect.run.bind(_effect);
     runner.effect = _effect;
 
-    return _effect.run.bind(_effect);
+    // return _effect.run.bind(_effect);
+    return runner;
 }
 
 export function stop(runner){
