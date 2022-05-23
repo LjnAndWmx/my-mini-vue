@@ -16,8 +16,8 @@ function createGetter(isReadonly = false){
         if(!isReadonly){
             track(target, key);
         }
-        console.log('get开始');
-        console.log(res);
+        // console.log('get开始');
+        // console.log(res);
         return res;
     }
 }
@@ -26,8 +26,8 @@ function createSetter(){
     return function set(target, key, value){
         const res = Reflect.set(target, key, value);
         trigger(target, key);
-        console.log('set开始');
-        console.log(res);
+        // console.log('set开始');
+        // console.log(res);
         return res;
     }
 }
